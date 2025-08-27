@@ -1,8 +1,7 @@
 package Controllers;
 
 import Models.User;
-import Services.Impl.UserServiceImpl;
-import Services.UserService;
+import Services.AuthService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,11 +14,11 @@ import java.io.PrintWriter;
 @WebServlet("/user/")
 public class UserController extends HttpServlet {
 
-    private UserService userService;
+    private AuthService authService;
 
     @Override
     public void init() throws ServletException {
-        this.userService = new UserServiceImpl();
+        this.authService = new AuthService();
     }
 
     @Override
@@ -45,7 +44,7 @@ public class UserController extends HttpServlet {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
-        boolean success = userService.registerUser(username, email, password);
+        boolean success = authService.register(username, email, password);
 
         if(success) {
             out.print("{\"success\": true, \"message\": \"User registered successfully\"}");
@@ -54,11 +53,11 @@ public class UserController extends HttpServlet {
         }
     }
 
-    private void handleLogin(HttpServletRequest req, PrintWriter out) {
-        String email = req.getParameter("email");
-        String password = req.getParameter("password");
+    private void handleLogin(HttpServletRequest request, PrintWriter out) {
+        String email = request.getParameter("email");
+        String password = request.getParameter("password");
 
-        User loggedInUser = userService.loginUser(email, password);
+        User loggedInUser = authService.login(email, password);
 
         if (loggedInUser != null) {
             out.print("{\"success\": true, \"message\": \"Login successful\"}");
@@ -68,12 +67,13 @@ public class UserController extends HttpServlet {
         }
     }
 
-    private void handleUpdate(HttpServletRequest req, PrintWriter out) {
-        int userId = Integer.parseInt(req.getParameter("id"));
-        String newUsername = req.getParameter("username");
-        String newPassword = req.getParameter("password");
+    private void handleUpdate(HttpServletRequest request, PrintWriter out) {
+        int userId = Integer.parseInt(request.getParameter("id"));
+        String newUsername = request.getParameter("username");
+        String newPassword = request.getParameter("password");
+        String newEmail = request.getParameter("email");
 
-        boolean success = userService.updateUser(userId, newUsername, newPassword);
+        boolean success = authService.update(userId, newUsername, newEmail, newPassword);
         if (success) {
             out.print("{\"success\": true, \"message\": \"User updated successfully\"}");
         } else {

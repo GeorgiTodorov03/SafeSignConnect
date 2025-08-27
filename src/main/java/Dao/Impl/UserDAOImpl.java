@@ -103,7 +103,7 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public void updateUser(User user) {
+    public boolean updateUser(User user) {
         String sql = "UPDATE users SET username = ?, email = ?, password_hash = ? WHERE id = ?";
         try(Connection connection = DatabaseConnection.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
@@ -113,9 +113,11 @@ public class UserDAOImpl implements UserDAO {
             statement.setString(3, hashPassword(user.getPasswordHash()));
             statement.setLong(4, user.getId());
             statement.executeUpdate();
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     @Override

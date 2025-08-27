@@ -12,7 +12,7 @@ public interface UserDAO {
     User getUserById(int id);                   // Get by ID
     User getUserByUsername(String username);    // Find by username
     User getUserByEmail(String email);          // Find by email
-    void updateUser(User user);                 // Change username/email/password
+    boolean updateUser(User user);                 // Change username/email/password
     void deleteUser(int id);                    // Delete account
     void updateLastLogin(int id);               // Track last login
     void incrementFailedAttempts(int id);       // Security lock

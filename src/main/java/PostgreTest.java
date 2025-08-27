@@ -1,7 +1,7 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-public class PostreTest {
+public class PostgreTest {
     public static void main(String[] args) {
 
         String url = "jdbc:postgresql://localhost:5432/safesign";
