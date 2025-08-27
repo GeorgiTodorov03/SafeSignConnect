@@ -1,13 +1,20 @@
 package Services.Impl;
 
-import Controllers.Dao.UserDAO;
+import Dao.Impl.UserDAOImpl;
+import Dao.UserDAO;
 import Models.User;
 import Services.UserService;
 import org.mindrot.jbcrypt.BCrypt;
 
+import java.time.LocalDateTime;
+
 public class UserServiceImpl implements UserService {
 
     private final UserDAO userDAO;
+
+    public UserServiceImpl() {
+        this.userDAO = new UserDAOImpl();
+    }
 
     public UserServiceImpl(UserDAO userDAO) {
         this.userDAO = userDAO;
@@ -40,8 +47,11 @@ public class UserServiceImpl implements UserService {
         }
 
         //Check password hash
-        if(BCrypt.checkpw(password, user.getPasswordHash()))
+        if(BCrypt.checkpw(password, user.getPasswordHash())) {
+            user.setLastLogin(LocalDateTime.now());
+            userDAO.updateUser(user);
             return user;
+        }
 
         System.out.println("Incorrect password.");
         return null;
@@ -88,5 +98,26 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    @Override
+    public boolean updateUser(int id, String newUsername, String newPassword) {
+        User user = userDAO.getUserById(id);
+        if (user == null) return false;
+
+        if (newUsername != null && !newUsername.isBlank()) {
+            user.setUsername(newUsername);
+        }
+        if (newPassword != null && !newPassword.isBlank()) {
+            String hashed = hashPassword(newPassword);
+            user.setPasswordHash(hashed);
+        }
+
+        userDAO.updateUser(user);
+        return true;
+    }
+
+    private String hashPassword(String plainPassword) {
+        return BCrypt.hashpw(plainPassword, BCrypt.gensalt(12));
     }
 }

@@ -1,6 +1,6 @@
-package Controllers.Dao.Impl;
+package Dao.Impl;
 
-import Controllers.Dao.UserDAO;
+import Dao.UserDAO;
 import Models.User;
 import Utils.DatabaseConnection;
 import org.mindrot.jbcrypt.BCrypt;
@@ -33,8 +33,6 @@ public class UserDAOImpl implements UserDAO {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     int generatedId = rs.getInt("id");
-                    // Reflect it back into the user object
-                    // (assuming you add a private setter or make `id` not final)
                     user.setId(generatedId);
                     return true;
                 }

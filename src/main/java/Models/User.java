@@ -61,13 +61,32 @@ public class User {
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
     public LocalDateTime getLastLogin() {
         return lastLogin;
     }
+
+    public void setLastLogin(LocalDateTime lastLogin) {
+        this.lastLogin = lastLogin;
+    }
+
     public int getFailedAttempts() {
         return failedAttempts;
     }
+
+    public void setFailedAttempts(int failedAttempts) {
+        this.failedAttempts = failedAttempts;
+    }
+
     public boolean isLocked() {
         return isLocked;
+    }
+
+    public void setIsLocked(boolean locked) {
+        isLocked = locked;
     }
 }

@@ -1,4 +1,4 @@
-package Controllers.Dao;
+package Dao;
 
 import Models.User;
 import java.util.List;
