@@ -3,7 +3,7 @@ package Models;
 import java.time.LocalDateTime;
 
 public class User {
-    private Long id;
+    private int id;
     private String username;
     private String email;
     private String passwordHash;
@@ -13,7 +13,7 @@ public class User {
     private boolean isLocked;
 
     // Constructors
-    public User(Long id, String username, String email, String passwordHash,
+    public User(int id, String username, String email, String passwordHash,
                 LocalDateTime createdAt, LocalDateTime lastLogin,
                 int failedAttempts, boolean isLocked) {
         this.id = id;
@@ -27,22 +27,37 @@ public class User {
     }
 
     public User(String username, String email, String passwordHash) {
-        this(Long.valueOf(0), username, email, passwordHash, null, null, 0, false);
+        this(0, username, email, passwordHash, null, null, 0, false);
     }
 
-    // Getters only (no direct setters for security-critical fields)
-    public Long getId() {
+
+    public int getId() {
         return id;
     }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getUsername() {
         return username;
     }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public String getEmail() {
         return email;
     }
     public String getPasswordHash() {
         return passwordHash;
     }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }

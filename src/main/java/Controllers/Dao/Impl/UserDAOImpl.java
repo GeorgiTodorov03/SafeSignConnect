@@ -5,7 +5,6 @@ import Models.User;
 import Utils.DatabaseConnection;
 import org.mindrot.jbcrypt.BCrypt;
 
-import javax.xml.crypto.Data;
 import java.sql.*;
 import java.time.LocalDateTime;
 
@@ -13,20 +12,40 @@ public class UserDAOImpl implements UserDAO {
 
 
     @Override
-    public void addUser(User user) {
-        String sql = "INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)";
+    public boolean createUser(User user) {
+        String sql = "INSERT INTO users (username, email, password_hash, created_at, last_login, failed_attempts, is_locked) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id";
 
-        try (Connection connection = DatabaseConnection.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sql);
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            statement.setString(1, user.getUsername());
-            statement.setString(2, user.getEmail());
-            statement.setString(3, hashPassword(user.getPasswordHash()));
-            statement.executeUpdate();
+            stmt.setString(1, user.getUsername());
+            stmt.setString(2, user.getEmail());
+            stmt.setString(3, user.getPasswordHash());
+            stmt.setTimestamp(4, Timestamp.valueOf(
+                    user.getCreatedAt() != null ? user.getCreatedAt() : LocalDateTime.now()
+            ));
+            stmt.setTimestamp(5, null); // lastLogin is null on creation
+            stmt.setInt(6, 0);          // failedAttempts default
+            stmt.setBoolean(7, false);  // isLocked default
+
+            // Execute and fetch the generated ID
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    int generatedId = rs.getInt("id");
+                    // Reflect it back into the user object
+                    // (assuming you add a private setter or make `id` not final)
+                    user.setId(generatedId);
+                    return true;
+                }
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return false;
     }
+
 
     @Override
     public User getUserById(int id) {
@@ -177,7 +196,7 @@ public class UserDAOImpl implements UserDAO {
 
     private User mapRowToUser(ResultSet rs) throws SQLException {
         return new User(
-                rs.getLong("id"),
+                rs.getInt("id"),
                 rs.getString("username"),
                 rs.getString("email"),
                 rs.getString("password_hash"),

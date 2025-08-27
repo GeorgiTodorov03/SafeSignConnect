@@ -8,7 +8,7 @@ public interface UserDAO {
     // UserDAO(Data Access Object) this interface, and it's implementation are created to
     // separate data persistence logic(database operations) from the business logic(services, controllers)
 
-    void addUser(User user);                    // Register
+    boolean createUser(User user);                    // Register
     User getUserById(int id);                   // Get by ID
     User getUserByUsername(String username);    // Find by username
     User getUserByEmail(String email);          // Find by email
